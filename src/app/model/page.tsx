@@ -43,15 +43,12 @@ const ModalLayout = () => {
     fetchUserData();
   }, [session?.user?.email]);
 
-  const handleSubmit = async (e: any) => {
+const handleSubmit = async (e: any) => {
     e.preventDefault();
     setLoading(true);
 
-    const API_KEY =
-      "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";
-
-    const invokeUrl =
-      "https://health.api.nvidia.com/v1/biology/nvidia/molmim/generate";
+    // CHANGED: Point to your new local API route
+    const invokeUrl = "/api/generate";
 
     const payload = {
       algorithm: "CMA-ES",
@@ -68,15 +65,16 @@ const ModalLayout = () => {
       const response = await fetch(invokeUrl, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${API_KEY}`,
-          Accept: "application/json",
+          // REMOVED: Authorization header is handled on the server now
           "Content-Type": "application/json",
         },
         body: JSON.stringify(payload),
       });
 
       const data = await response.json();
-      const generatedMolecules = JSON.parse(data.molecules).map((mol: any) => ({
+      
+      // ... rest of your code (JSON.parse(data.molecules), etc.) remains the same
+            const generatedMolecules = JSON.parse(data.molecules).map((mol: any) => ({
         structure: mol.sample,
         score: mol.score,
       }));

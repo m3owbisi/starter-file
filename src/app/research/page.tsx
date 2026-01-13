@@ -19,7 +19,7 @@ export default function PubChem() {
       const response = await fetch(
         `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${encodeURIComponent(
           compoundName,
-        )}/property/MolecularFormula,MolecularWeight,InChIKey,CanonicalSMILES,IsomericSMILES,IUPACName,XLogP,ExactMass,MonoisotopicMass,TPSA,Complexity,Charge,HBondDonorCount,HBondAcceptorCount,RotatableBondCount,HeavyAtomCount/JSON`,
+        )}/property/MolecularFormula,MolecularWeight,InChIKey,SMILES,ConnectivitySMILES,IUPACName,XLogP,ExactMass,MonoisotopicMass,TPSA,Complexity,Charge,HBondDonorCount,HBondAcceptorCount,RotatableBondCount,HeavyAtomCount/JSON`,
       );
 
       if (!response.ok) {
@@ -39,8 +39,8 @@ export default function PubChem() {
           MolecularFormula: compoundInfo.MolecularFormula,
           MolecularWeight: compoundInfo.MolecularWeight,
           InChIKey: compoundInfo.InChIKey,
-          CanonicalSMILES: compoundInfo.CanonicalSMILES,
-          IsomericSMILES: compoundInfo.IsomericSMILES,
+          CanonicalSMILES: compoundInfo.SMILES,
+          IsomericSMILES: compoundInfo.SMILES,
           IUPACName: compoundInfo.IUPACName,
           XLogP: compoundInfo.XLogP,
           ExactMass: compoundInfo.ExactMass,
