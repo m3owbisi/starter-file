@@ -23,6 +23,7 @@ declare type CreateUserParams = {
   lastName?: string;
   userBio?: string;
   isEmailVerified?: boolean;
+  role?: string;
 };
 
 declare type UpdateUserParams = {
@@ -57,4 +58,44 @@ declare type ModalProps = {
   title: string;
   content: React.ReactNode;
   onCloseText: string;
+};
+
+// protein visualization types
+declare type AminoAcidInfo = {
+  code: string;        // single letter code (e.g., 'a')
+  threeLetter: string; // three letter code (e.g., 'ala')
+  fullName: string;    // full name (e.g., 'alanine')
+  type: 'hydrophobic' | 'polar' | 'positive' | 'negative' | 'special';
+  molecularWeight: number;
+};
+
+declare type BindingSite = {
+  id: string;
+  name: string;
+  residues: number[];  // residue indices
+  color: string;
+  affinity?: number;   // binding affinity value (kd in nanomolar)
+};
+
+declare type ProteinData = {
+  id: string;
+  name: string;
+  pdbContent: string;
+  bindingSites: BindingSite[];
+  uploadDate: Date;
+};
+
+declare type ViewerState = {
+  selectedResidues: number[];
+  highlightedSites: string[];
+  zoomLevel: number;
+  rotation: { x: number; y: number; z: number };
+};
+
+declare type AminoAcidTypeFilter = {
+  hydrophobic: boolean;
+  polar: boolean;
+  positive: boolean;
+  negative: boolean;
+  special: boolean;
 };

@@ -6,43 +6,65 @@ import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import ComponentHeader from "@/components/ComponentHeader/ComponentHeader";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import ErrorModal from "@/components/modals/ErrorModal";
+import InlineError from "@/components/auth/InlineError";
+
+interface FormErrors {
+  email?: string;
+  password?: string;
+}
 
 const SignIn: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [formErrors, setFormErrors] = useState<FormErrors>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [modalError, setModalError] = useState<string | null>(null);
   const router = useRouter();
+
+  const validateForm = (): boolean => {
+    const errors: FormErrors = {};
+
+    if (!email) {
+      errors.email = "email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errors.email = "please enter a valid email address";
+    }
+
+    if (!password) {
+      errors.password = "password is required";
+    } else if (password.length < 6) {
+      errors.password = "password must be at least 6 characters";
+    }
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    setIsLoading(true);
+    setModalError(null);
 
-    // Basic form validation
-    if (!email || !password) {
-      setError("please fill in all fields.");
-      setIsLoading(false);
+    if (!validateForm()) {
       return;
     }
 
+    setIsLoading(true);
+
     try {
-      // Use NextAuth's signIn function
       const result = await signIn("credentials", {
-        redirect: false, // Prevent auto-redirect
+        redirect: false,
         email,
         password,
       });
 
       if (result?.error) {
-        setError(result.error); // Handle login error
+        setModalError("invalid email or password. please try again.");
       } else {
-        // Navigate to the dashboard or another page on successful login
         router.push("/");
       }
     } catch (err: any) {
-      // Handle unexpected error
-      setError("something went wrong. please try again.");
+      setModalError("something went wrong. please try again.");
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -53,6 +75,13 @@ const SignIn: React.FC = () => {
     <DefaultLayout>
       <ComponentHeader pageName="sign in" />
 
+      <ErrorModal
+        isOpen={!!modalError}
+        onClose={() => setModalError(null)}
+        title="login failed"
+        message={modalError || ""}
+      />
+
       <div className="rounded-lg border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="flex flex-wrap items-center">
           <div className="mx-auto w-full xl:w-4/6">
@@ -61,8 +90,6 @@ const SignIn: React.FC = () => {
               <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
                 sign in to protein bind
               </h2>
-
-              {error && <div className="text-red-500 mb-4">{error}</div>}
 
               <form onSubmit={handleSubmit}>
                 <div className="mb-4">
@@ -73,16 +100,23 @@ const SignIn: React.FC = () => {
                     <input
                       type="email"
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                        if (formErrors.email) {
+                          setFormErrors({ ...formErrors, email: undefined });
+                        }
+                      }}
                       placeholder="enter your email"
-                      className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                      required
+                      className={`w-full rounded-lg border ${
+                        formErrors.email ? "border-red-500" : "border-stroke"
+                      } bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
                       disabled={isLoading}
                     />
                     <span className="absolute right-4 top-4">
                       <MailIcon />
                     </span>
                   </div>
+                  <InlineError message={formErrors.email} />
                 </div>
 
                 <div className="mb-6">
@@ -93,16 +127,23 @@ const SignIn: React.FC = () => {
                     <input
                       type="password"
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      onChange={(e) => {
+                        setPassword(e.target.value);
+                        if (formErrors.password) {
+                          setFormErrors({ ...formErrors, password: undefined });
+                        }
+                      }}
                       placeholder="6+ characters, 1 capital letter"
-                      className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                      required
+                      className={`w-full rounded-lg border ${
+                        formErrors.password ? "border-red-500" : "border-stroke"
+                      } bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
                       disabled={isLoading}
                     />
                     <span className="absolute right-4 top-4">
                       <LockIcon />
                     </span>
                   </div>
+                  <InlineError message={formErrors.password} />
                 </div>
 
                 <div className="mb-5">
@@ -124,7 +165,7 @@ const SignIn: React.FC = () => {
 
                 <div className="mt-6 text-center">
                   <p>
-                    don’t have an account?{" "}
+                    don't have an account?{" "}
                     <Link href="/auth-page/signup" className="text-primary">
                       sign up
                     </Link>

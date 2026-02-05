@@ -23,6 +23,7 @@ export async function createUser(user: CreateUserParams) {
       ...user,
       password: hashedPassword,
       userBio: user.userBio || "",
+      role: user.role || "guest",
     });
 
     const verificationUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/verify-email?token=${newUser._id}`;

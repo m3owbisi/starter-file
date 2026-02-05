@@ -11,9 +11,24 @@ import {
   LockIcon,
   MailIcon,
   UserIcon,
+  Users,
 } from "lucide-react";
+import ErrorModal from "@/components/modals/ErrorModal";
+import InlineError from "@/components/auth/InlineError";
+import { useRouter } from "next/navigation";
+
+interface FormErrors {
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  password?: string;
+  confirmPassword?: string;
+  photo?: string;
+  role?: string;
+}
 
 const SignUp: React.FC = () => {
+  const router = useRouter();
   const [user, setUser] = useState({
     email: "",
     firstName: "",
@@ -22,25 +37,35 @@ const SignUp: React.FC = () => {
     confirmPassword: "",
     photo: "",
     userBio: "",
+    role: "guest",
   });
 
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [errors, setErrors] = useState<string | null>(null);
+  const [formErrors, setFormErrors] = useState<FormErrors>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [modalError, setModalError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setUser((prev) => ({
       ...prev,
-      [name]: value, // Ensure the value is treated as a string
+      [name]: value,
     }));
+    // clear error when user starts typing
+    if (formErrors[name as keyof FormErrors]) {
+      setFormErrors((prev) => ({ ...prev, [name]: undefined }));
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null;
     setImageFile(file);
+    if (formErrors.photo) {
+      setFormErrors((prev) => ({ ...prev, photo: undefined }));
+    }
   };
 
   const convertImageToBase64 = async (file: File): Promise<string> => {
@@ -56,24 +81,50 @@ const SignUp: React.FC = () => {
     });
   };
 
-  // Validate form fields
-  const validateForm = useCallback(() => {
-    if (
-      !user.email ||
-      !user.firstName ||
-      !user.lastName ||
-      !user.password ||
-      !user.confirmPassword
-    ) {
-      return "please fill in all the fields.";
+  const validatePassword = (password: string): boolean => {
+    // at least 6 characters, 1 uppercase letter
+    return password.length >= 6 && /[A-Z]/.test(password);
+  };
+
+  const validateForm = useCallback((): boolean => {
+    const errors: FormErrors = {};
+
+    if (!user.email) {
+      errors.email = "email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(user.email)) {
+      errors.email = "please enter a valid email address";
     }
-    if (user.password !== user.confirmPassword) {
-      return "passwords do not match.";
+
+    if (!user.firstName) {
+      errors.firstName = "first name is required";
+    } else if (user.firstName.length < 2) {
+      errors.firstName = "first name must be at least 2 characters";
     }
+
+    if (!user.lastName) {
+      errors.lastName = "last name is required";
+    } else if (user.lastName.length < 2) {
+      errors.lastName = "last name must be at least 2 characters";
+    }
+
+    if (!user.password) {
+      errors.password = "password is required";
+    } else if (!validatePassword(user.password)) {
+      errors.password = "password must be at least 6 characters with 1 uppercase letter";
+    }
+
+    if (!user.confirmPassword) {
+      errors.confirmPassword = "please confirm your password";
+    } else if (user.password !== user.confirmPassword) {
+      errors.confirmPassword = "passwords do not match";
+    }
+
     if (!imageFile) {
-      return "please upload a profile picture.";
+      errors.photo = "please upload a profile picture";
     }
-    return null;
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
   }, [user, imageFile]);
 
   let isSubmitting = false;
@@ -83,17 +134,14 @@ const SignUp: React.FC = () => {
     if (isSubmitting) return;
     isSubmitting = true;
 
-    setIsLoading(true);
+    setModalError(null);
 
-    const formError = validateForm();
-    if (formError) {
-      setErrors(formError);
-      setIsLoading(false);
+    if (!validateForm()) {
       isSubmitting = false;
       return;
     }
 
-    setErrors(null);
+    setIsLoading(true);
 
     try {
       let base64Image = "";
@@ -106,10 +154,11 @@ const SignUp: React.FC = () => {
         photo: base64Image,
       };
 
-      console.log(newUser);
-      const createdUser = await createUser(newUser);
-      console.log(createdUser);
+      await createUser(newUser);
 
+      setSuccessMessage("registration successful! please check your email to verify your account.");
+      
+      // reset form
       setUser({
         email: "",
         firstName: "",
@@ -118,12 +167,17 @@ const SignUp: React.FC = () => {
         confirmPassword: "",
         photo: "",
         userBio: "",
+        role: "guest",
       });
       setImageFile(null);
-      setIsLoading(false);
-    } catch (error) {
+
+      // redirect to signin after 3 seconds
+      setTimeout(() => {
+        router.push("/auth-page/signin");
+      }, 3000);
+    } catch (error: any) {
       console.error("error registering user:", error);
-      setErrors("registration failed.");
+      setModalError(error.message || "registration failed. please try again.");
     } finally {
       isSubmitting = false;
       setIsLoading(false);
@@ -133,6 +187,19 @@ const SignUp: React.FC = () => {
   return (
     <DefaultLayout>
       <ComponentHeader pageName="sign up" />
+
+      <ErrorModal
+        isOpen={!!modalError}
+        onClose={() => setModalError(null)}
+        title="registration failed"
+        message={modalError || ""}
+      />
+
+      {successMessage && (
+        <div className="mb-4 rounded-lg bg-green-100 p-4 text-green-700 dark:bg-green-900 dark:text-green-300">
+          {successMessage}
+        </div>
+      )}
 
       <div className="rounded-lg border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="flex flex-wrap items-center" onSubmit={handleSubmit}>
@@ -302,13 +369,15 @@ const SignUp: React.FC = () => {
                       value={user.firstName}
                       onChange={handleInputChange}
                       placeholder="enter your first name"
-                      className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      className={`w-full rounded-lg border ${
+                        formErrors.firstName ? "border-red-500" : "border-stroke"
+                      } bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
                     />
-
                     <span className="absolute right-4 top-4">
                       <UserIcon />
                     </span>
                   </div>
+                  <InlineError message={formErrors.firstName} />
                 </div>
 
                 <div className="mb-4">
@@ -322,14 +391,17 @@ const SignUp: React.FC = () => {
                       value={user.lastName}
                       onChange={handleInputChange}
                       placeholder="enter your last name"
-                      className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      className={`w-full rounded-lg border ${
+                        formErrors.lastName ? "border-red-500" : "border-stroke"
+                      } bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
                     />
-
                     <span className="absolute right-4 top-4">
                       <UserIcon />
                     </span>
                   </div>
+                  <InlineError message={formErrors.lastName} />
                 </div>
+
                 <div className="mb-4">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
                     email
@@ -341,11 +413,34 @@ const SignUp: React.FC = () => {
                       value={user.email}
                       onChange={handleInputChange}
                       placeholder="enter your email"
-                      className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      className={`w-full rounded-lg border ${
+                        formErrors.email ? "border-red-500" : "border-stroke"
+                      } bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
                     />
-
                     <span className="absolute right-4 top-4">
                       <MailIcon />
+                    </span>
+                  </div>
+                  <InlineError message={formErrors.email} />
+                </div>
+
+                <div className="mb-4">
+                  <label className="mb-2.5 block font-medium text-black dark:text-white">
+                    role
+                  </label>
+                  <div className="relative">
+                    <select
+                      name="role"
+                      value={user.role}
+                      onChange={handleInputChange}
+                      className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                    >
+                      <option value="guest">guest</option>
+                      <option value="researcher">researcher</option>
+                      <option value="admin">admin</option>
+                    </select>
+                    <span className="absolute right-4 top-4">
+                      <Users />
                     </span>
                   </div>
                 </div>
@@ -360,14 +455,16 @@ const SignUp: React.FC = () => {
                       name="password"
                       value={user.password}
                       onChange={handleInputChange}
-                      placeholder="enter your password"
-                      className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      placeholder="6+ characters, 1 capital letter"
+                      className={`w-full rounded-lg border ${
+                        formErrors.password ? "border-red-500" : "border-stroke"
+                      } bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
                     />
-
                     <span className="absolute right-4 top-4">
                       <LockIcon />
                     </span>
                   </div>
+                  <InlineError message={formErrors.password} />
                 </div>
 
                 <div className="mb-6">
@@ -381,12 +478,15 @@ const SignUp: React.FC = () => {
                       value={user.confirmPassword}
                       onChange={handleInputChange}
                       placeholder="re-enter your password"
-                      className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      className={`w-full rounded-lg border ${
+                        formErrors.confirmPassword ? "border-red-500" : "border-stroke"
+                      } bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary`}
                     />
                     <span className="absolute right-4 top-4">
                       <LockIcon />
                     </span>
                   </div>
+                  <InlineError message={formErrors.confirmPassword} />
                 </div>
 
                 <div className="mb-4">
@@ -395,7 +495,7 @@ const SignUp: React.FC = () => {
                   </label>
                   <div className="relative">
                     <textarea
-                      name="bio"
+                      name="userBio"
                       value={user.userBio}
                       onChange={handleInputChange}
                       placeholder="enter your bio"
@@ -409,7 +509,6 @@ const SignUp: React.FC = () => {
                     profile picture
                   </label>
                   <div className="relative flex items-center justify-center">
-                    {/* Hidden file input */}
                     <input
                       type="file"
                       accept="image/*"
@@ -417,24 +516,23 @@ const SignUp: React.FC = () => {
                       className="hidden"
                       id="fileInput"
                     />
-
-                    {/* Custom icon for file input */}
                     <div
                       onClick={() =>
                         document.getElementById("fileInput")?.click()
                       }
-                      className="flex cursor-pointer flex-col items-center"
+                      className={`flex cursor-pointer flex-col items-center rounded-lg border ${
+                        formErrors.photo ? "border-red-500" : "border-stroke"
+                      } p-4 dark:border-form-strokedark`}
                     >
-                      {/* Replace with any icon or image */}
                       <CameraIcon size={25} />
-                      <span className="text-gray-500 mt-2 text-sm">
-                        choose profile picture
+                      <span className="mt-2 text-sm text-gray-500">
+                        {imageFile ? imageFile.name : "choose profile picture"}
                       </span>
                     </div>
                   </div>
+                  <InlineError message={formErrors.photo} />
                 </div>
 
-                {errors && <div className="mb-4 text-red">{errors}</div>}
                 <div className="mb-5">
                   <button
                     type="submit"

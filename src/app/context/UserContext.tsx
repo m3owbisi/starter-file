@@ -17,6 +17,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     photo: "/images/user/user-01.png",
     jobTitle: "drug researcher",
     userBio: "",
+    role: "guest",
   });
 
   useEffect(() => {
@@ -29,6 +30,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
           photo: fetchedUser?.photo || "/images/user/user-01.png",
           jobTitle: fetchedUser?.jobTitle || "researcher",
           userBio: fetchedUser?.userBio || "",
+          role: fetchedUser?.role || "guest",
         });
       }
     };

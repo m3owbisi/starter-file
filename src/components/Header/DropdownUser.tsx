@@ -29,8 +29,19 @@ const DropdownUser = () => {
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
             {user.firstName} {user.lastName}
-          </span> {/* John Doe */}
-          <span className="block text-xs">{user.jobTitle}</span> {/* Drug Researcher */}
+          </span>
+          <span className="flex items-center justify-end gap-2 text-xs">
+            <span>{user.jobTitle}</span>
+            <span className={`rounded px-1.5 py-0.5 text-xs font-medium ${
+              user.role === "admin" 
+                ? "bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-300" 
+                : user.role === "researcher" 
+                  ? "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300"
+                  : "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300"
+            }`}>
+              {user.role}
+            </span>
+          </span>
         </span>
 
         <span className="h-11 w-11 rounded-full">

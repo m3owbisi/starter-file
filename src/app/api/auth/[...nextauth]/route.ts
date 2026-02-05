@@ -29,15 +29,19 @@ export const handler = NextAuth({
     maxAge: 24 * 60 * 60,
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }: any) {
       if (user) {
-        token.id = user.id;
+        token.id = user._id || user.id;
+        token.role = user.role || "guest";
+        token.email = user.email;
       }
       return token;
     },
     async session({ session, token }: any) {
       if (token) {
         session.id = token.id;
+        session.role = token.role;
+        session.email = token.email;
       }
       return session;
     },

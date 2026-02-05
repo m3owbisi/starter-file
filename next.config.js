@@ -2,6 +2,9 @@ const CopyPlugin = require("copy-webpack-plugin");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // transpile molstar packages
+  transpilePackages: ["molstar"],
+  
   webpack(config, { isServer }) {
     config.plugins.push(
       new CopyPlugin({
@@ -17,6 +20,8 @@ const nextConfig = {
     if (!isServer) {
       config.resolve.fallback = {
         fs: false,
+        path: false,
+        crypto: false,
       };
     }
 

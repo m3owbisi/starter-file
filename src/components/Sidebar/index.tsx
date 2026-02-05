@@ -15,6 +15,9 @@ import {
   Settings,
   MessageSquareText,
   ChevronLeft,
+  Dna,
+  Upload,
+  Target,
 } from "lucide-react";
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -44,6 +47,21 @@ const menuGroups = [
         icon: <Microscope size={25} />,
         label: "research",
         route: "/research",
+      },
+      {
+        icon: <Dna size={25} />,
+        label: "protein viewer",
+        route: "/protein-viewer",
+      },
+      {
+        icon: <Upload size={25} />,
+        label: "dataset upload",
+        route: "/dataset-upload",
+      },
+      {
+        icon: <Target size={25} />,
+        label: "binding prediction",
+        route: "/binding-prediction",
       },
       {
         icon: <MessageSquareText size={25} />,
