@@ -11,6 +11,112 @@
 }
 
 @layer components {
+  /* analytics dashboard styles */
+  .analytics-card {
+    @apply relative overflow-hidden rounded-2xl p-6 border transition-all duration-300;
+    @apply bg-white dark:bg-gray-900;
+    @apply hover:shadow-lg;
+    backdrop-filter: blur(12px);
+  }
+
+  .analytics-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #3c50e0, #8b5cf6, #06b6d4);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .analytics-card:hover::before {
+    opacity: 1;
+  }
+
+  .analytics-chart-container {
+    @apply relative rounded-2xl p-6 border transition-all duration-300;
+    @apply bg-white dark:bg-gray-900;
+    @apply border-gray-200 dark:border-gray-700;
+    backdrop-filter: blur(12px);
+  }
+
+  .analytics-tooltip {
+    @apply bg-white dark:bg-gray-900 rounded-xl p-4 shadow-xl;
+    @apply border border-gray-200 dark:border-gray-700;
+    backdrop-filter: blur(12px);
+  }
+
+  /* chart responsive styles */
+  @screen md {
+    .analytics-chart-container {
+      @apply p-8;
+    }
+  }
+
+  /* experiments tracker styles */
+  .experiment-card {
+    @apply relative overflow-hidden rounded-2xl p-6 border transition-all duration-300;
+    @apply bg-white dark:bg-gray-900;
+    @apply border-gray-200 dark:border-gray-700;
+    @apply hover:shadow-lg;
+    backdrop-filter: blur(12px);
+  }
+
+  .experiment-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #3c50e0, #8b5cf6, #06b6d4);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .experiment-card:hover::before {
+    opacity: 1;
+  }
+
+  .experiment-btn-primary {
+    @apply bg-gradient-to-r from-[#3c50e0] to-[#8b5cf6] text-white;
+    @apply hover:from-[#3447c7] hover:to-[#7c4fd4];
+    @apply shadow-md hover:shadow-lg;
+  }
+
+  .experiment-stat-card {
+    @apply p-4 rounded-xl border transition-all;
+    @apply bg-gray-50 dark:bg-gray-800/50;
+    @apply border-gray-200 dark:border-gray-700;
+  }
+
+  .experiment-filter-panel {
+    @apply p-5 rounded-2xl border;
+    @apply bg-white dark:bg-gray-900;
+    @apply border-gray-200 dark:border-gray-700;
+  }
+
+  .experiment-empty-state {
+    @apply rounded-2xl border-2 border-dashed;
+    @apply border-gray-200 dark:border-gray-700;
+    @apply bg-gray-50/50 dark:bg-gray-800/30;
+  }
+
+  /* experiment timeline animation */
+  @keyframes timelinePulse {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(60, 80, 224, 0.4);
+    }
+    50% {
+      box-shadow: 0 0 0 8px rgba(60, 80, 224, 0);
+    }
+  }
+
+  .experiment-timeline-dot-active {
+    animation: timelinePulse 2s infinite;
+  }
 }
 
 @layer utilities {
