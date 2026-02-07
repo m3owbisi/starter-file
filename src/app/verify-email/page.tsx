@@ -6,7 +6,7 @@ import { verifyEmail } from "@/lib/actions/user.actions";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import { CircleCheckBig } from "lucide-react";
 
-const VerifyEmailContent: React.FC = () => {
+const VerifyEmailPage: React.FC = () => {
   const [status, setStatus] = useState<"loading" | "success" | "error">(
     "loading",
   );
@@ -55,14 +55,6 @@ const VerifyEmailContent: React.FC = () => {
         )}
       </div>
     </DefaultLayout>
-  );
-};
-
-const VerifyEmailPage: React.FC = () => {
-  return (
-    <React.Suspense fallback={<div>Loading...</div>}>
-      <VerifyEmailContent />
-    </React.Suspense>
   );
 };
 

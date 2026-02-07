@@ -7,7 +7,7 @@ import Breadcrumb from "@/components/ComponentHeader/ComponentHeader";
 import { useRouter, useSearchParams } from "next/navigation";
 import { resetPassword } from "@/lib/actions/user.actions";
 
-const ResetPasswordContent: React.FC = () => {
+const ResetPasswordPage: React.FC = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -138,14 +138,6 @@ const ResetPasswordContent: React.FC = () => {
         </div>
       </div>
     </DefaultLayout>
-  );
-};
-
-const ResetPasswordPage: React.FC = () => {
-  return (
-    <React.Suspense fallback={<div>Loading...</div>}>
-      <ResetPasswordContent />
-    </React.Suspense>
   );
 };
 
