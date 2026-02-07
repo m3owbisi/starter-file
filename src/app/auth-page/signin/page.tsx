@@ -63,7 +63,7 @@ const SignIn: React.FC = () => {
       } else {
         router.push("/");
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       setModalError("something went wrong. please try again.");
       console.error(err);
     } finally {
@@ -165,7 +165,7 @@ const SignIn: React.FC = () => {
 
                 <div className="mt-6 text-center">
                   <p>
-                    don't have an account?{" "}
+                    don&apos;t have an account?{" "}
                     <Link href="/auth-page/signup" className="text-primary">
                       sign up
                     </Link>
