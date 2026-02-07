@@ -47,8 +47,6 @@ export interface IExperimentRun extends Document {
     isLatest: boolean;
   };
   tags: string[];
-  datasetId?: Types.ObjectId;
-  predictionId?: Types.ObjectId;
   startTime: Date;
   endTime?: Date;
   duration?: number;
@@ -176,16 +174,6 @@ const ExperimentRunSchema = new Schema<IExperimentRun>(
     tags: {
       type: [String],
       default: [],
-    },
-    datasetId: {
-      type: Schema.Types.ObjectId,
-      ref: "Dataset",
-      required: false,
-    },
-    predictionId: {
-      type: Schema.Types.ObjectId,
-      ref: "Prediction",
-      required: false,
     },
     startTime: {
       type: Date,

@@ -15,7 +15,7 @@ import {
   Settings,
   MessageSquareText,
   ChevronLeft,
-  Hexagon,
+  Dna,
   Upload,
   Target,
   BarChart3,
@@ -51,7 +51,7 @@ const menuGroups = [
         route: "/research",
       },
       {
-        icon: <Hexagon size={25} />,
+        icon: <Dna size={25} />,
         label: "protein viewer",
         route: "/protein-viewer",
       },

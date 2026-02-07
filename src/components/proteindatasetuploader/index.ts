@@ -1,1 +1,1 @@
-export { default as ProteinDatasetUploader } from "./proteindatasetuploader";
+export { default as ProteinDatasetUploader } from "./ProteinDatasetUploader";
