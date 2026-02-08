@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
 // mock data for protein type distribution
 const proteinTypes = [
   { name: "enzymes", count: 2847, color: "#3c50e0", percentage: 28.5 },

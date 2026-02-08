@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 
+export const dynamic = "force-dynamic";
+
 // mock data for upload statistics
 const generateMockUploadData = (days: number = 30, userId?: string) => {
   const data = [];

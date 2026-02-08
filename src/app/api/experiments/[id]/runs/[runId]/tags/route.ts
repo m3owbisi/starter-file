@@ -3,6 +3,8 @@ import { connectToDatabase } from "@/lib/database/mongoose";
 import { ExperimentRun } from "@/lib/database/models/experiment.model";
 import mongoose from "mongoose";
 
+export const dynamic = "force-dynamic";
+
 interface RouteParams {
   params: Promise<{ id: string; runId: string }>;
 }

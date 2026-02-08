@@ -4,6 +4,8 @@ import { ExperimentBranch, ExperimentRun, Experiment } from "@/lib/database/mode
 import mongoose from "mongoose";
 import { getServerSession } from "next-auth";
 
+export const dynamic = "force-dynamic";
+
 // mock user id for development
 const MOCK_USER_ID = "507f1f77bcf86cd799439011";
 

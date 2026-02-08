@@ -3,6 +3,8 @@ import { connectToDatabase } from "@/lib/database/mongoose";
 import { Experiment, ExperimentBranch } from "@/lib/database/models/experiment.model";
 import { getServerSession } from "next-auth";
 
+export const dynamic = "force-dynamic";
+
 // mock user id for development
 const MOCK_USER_ID = "507f1f77bcf86cd799439011";
 

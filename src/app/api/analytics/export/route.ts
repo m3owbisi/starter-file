@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
 // generate csv content from data
 const generateCSV = (data: any[], headers: string[]) => {
   const headerRow = headers.join(",");

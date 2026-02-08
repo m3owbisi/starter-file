@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
 // mock data for binding prediction success rates
 const generateMockBindingData = (days: number = 30, userId?: string) => {
   const data = [];
