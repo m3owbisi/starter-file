@@ -1,4 +1,5 @@
 "use client";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "jsvectormap/dist/jsvectormap.css";
 import "flatpickr/dist/flatpickr.min.css";
 import "@/css/style.css";
@@ -29,6 +30,7 @@ export default function RootLayout({
             </AblyProvider>
           </UserProvider>
         </SessionProvider>        
+        <SpeedInsights />
       </body>
     </html>
   );
