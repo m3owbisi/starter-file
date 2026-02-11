@@ -7,6 +7,16 @@ import { connectToDatabase } from "../database/mongoose";
 import { handleError } from "../utils";
 import { sendVerificationEmail, sendResetPasswordEmail } from "./email.actions";
 
+function getBaseUrl() {
+  if (process.env.NEXT_PUBLIC_API_BASE_URL) {
+    return process.env.NEXT_PUBLIC_API_BASE_URL;
+  }
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  return "http://localhost:3000";
+}
+
 export async function createUser(user: CreateUserParams) {
   try {
     await connectToDatabase();
@@ -26,7 +36,7 @@ export async function createUser(user: CreateUserParams) {
       role: user.role || "guest",
     });
 
-    const verificationUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/verify-email?token=${newUser._id}`;
+    const verificationUrl = `${getBaseUrl()}/verify-email?token=${newUser._id}`;
     await sendVerificationEmail(
       newUser.email,
       newUser.firstName || "user",
@@ -81,7 +91,7 @@ export async function requestPasswordReset(email: string) {
 
     const user = await User.findOne({ email });
     if (!user) throw new Error("user not found");
-    const resetUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/reset-password?token=${user._id}`;
+    const resetUrl = `${getBaseUrl()}/reset-password?token=${user._id}`;
     await sendResetPasswordEmail(
       user.email,
       user.firstName || "user",

@@ -1,26 +1,32 @@
+import { Resend } from "resend";
+import { VerifyEmailTemplate } from "@/components/EmailTemplates/verify-email";
+import { ResetPasswordTemplate } from "@/components/EmailTemplates/reset-email";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
 export async function sendVerificationEmail(
   email: string,
   firstName: string,
   verificationUrl: string,
 ) {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/send-verification-email`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, firstName, verificationUrl }),
-    },
-  );
+  try {
+    const { data, error } = await resend.emails.send({
+      from: "protein bind <onboarding@resend.dev>",
+      to: [email],
+      subject: "verify your email",
+      react: VerifyEmailTemplate({ firstName, verificationUrl }),
+    });
 
-  const data = await response.json();
+    if (error) {
+      console.error("resend error:", error);
+      throw new Error(error.message || "failed to send verification email");
+    }
 
-  if (!response.ok) {
-    throw new Error(data.error || "failed to send verification email");
+    return data;
+  } catch (error: any) {
+    console.error("send verification email error:", error);
+    throw new Error(error.message || "failed to send verification email");
   }
-
-  return data;
 }
 
 export async function sendResetPasswordEmail(
@@ -28,22 +34,22 @@ export async function sendResetPasswordEmail(
   firstName: string,
   resetUrl: string,
 ) {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/send-reset-password-email`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, firstName, resetUrl }),
-    },
-  );
+  try {
+    const { data, error } = await resend.emails.send({
+      from: "protein bind <support@resend.dev>",
+      to: [email],
+      subject: "reset your password",
+      react: ResetPasswordTemplate({ firstName, resetUrl }),
+    });
 
-  const data = await response.json();
+    if (error) {
+      console.error("resend error:", error);
+      throw new Error(error.message || "failed to send reset password email");
+    }
 
-  if (!response.ok) {
-    throw new Error(data.error || "failed to send reset password email");
+    return data;
+  } catch (error: any) {
+    console.error("send reset password email error:", error);
+    throw new Error(error.message || "failed to send reset password email");
   }
-
-  return data;
 }

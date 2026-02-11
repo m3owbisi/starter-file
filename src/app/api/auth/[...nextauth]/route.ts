@@ -28,6 +28,10 @@ export const handler = NextAuth({
     strategy: "jwt",
     maxAge: 24 * 60 * 60,
   },
+  pages: {
+    signIn: "/auth-page/signin",
+    error: "/auth-page/signin",
+  },
   callbacks: {
     async jwt({ token, user }: any) {
       if (user) {
