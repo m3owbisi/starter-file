@@ -9,19 +9,20 @@ const config: Config = {
   ],
   darkMode: "class",
   theme: {
-    fontFamily: {
-      satoshi: ["Satoshi", "sans-serif"],
+fontFamily: {
+      satoshi: ["Satoshi", "sans-serif"], // Agar Satoshi font file nahi hai to ise hata dein
       inter: ["Inter", "sans-serif"],
-      poppins: ["Poppins"],
+      poppins: ["Poppins", "sans-serif"],
     },
-    screens: {
-      "2xsm": "375px",
-      xsm: "425px",
-      "3xl": "2000px",
+screens: {
+      "2xsm": "375px", // Chote phones ke liye
+      xsm: "425px",    // Bade phones ke liye
+      "3xl": "2000px", // Bade monitors ke liye
       ...defaultTheme.screens,
     },
     extend: {
       colors: {
+        // primary: "#3C50E0",
         current: "currentColor",
         transparent: "transparent",
         white: "#FFFFFF",

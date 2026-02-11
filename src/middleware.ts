@@ -10,25 +10,34 @@ export default withAuth(
     const adminRoutes = ["/admin"];
     // researcher routes (admin can also access)
     const researcherRoutes = ["/research", "/model"];
+    // collaborative routes — require at least researcher role
+    const collaborativeRoutes = ["/message"];
 
+    // admin-only access
     if (adminRoutes.some((route) => pathname.startsWith(route))) {
       if (token?.role !== "admin") {
         return NextResponse.redirect(new URL("/", req.url));
       }
     }
 
+    // researcher + admin access
     if (researcherRoutes.some((route) => pathname.startsWith(route))) {
       if (token?.role !== "admin" && token?.role !== "researcher") {
         return NextResponse.redirect(new URL("/", req.url));
       }
     }
 
-    if (researcherRoutes.some((route) => pathname.startsWith(route))) {
-      if (token?.role !== "admin" && token?.role !== "researcher" && token?.role !== "guest") {
+    // collaborative research — requires authenticated researcher or admin
+    if (collaborativeRoutes.some((route) => pathname.startsWith(route))) {
+      if (
+        token?.role !== "admin" &&
+        token?.role !== "researcher"
+      ) {
+        // guests and unauthenticated users get redirected to dashboard
         return NextResponse.redirect(new URL("/", req.url));
       }
     }
-    
+
     return NextResponse.next();
   },
   {

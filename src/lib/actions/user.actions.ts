@@ -27,18 +27,11 @@ export async function createUser(user: CreateUserParams) {
     });
 
     const verificationUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/verify-email?token=${newUser._id}`;
-
-    
-    try {
-      await sendVerificationEmail(
-        newUser.email,
-        newUser.firstName || "user",
-        verificationUrl,
-      );
-    } catch (emailError) {
-      console.error("Failed to send verification email (non-fatal):", emailError);
-      // Continue execution so the user is created even if email fails
-    }
+    await sendVerificationEmail(
+      newUser.email,
+      newUser.firstName || "user",
+      verificationUrl,
+    );
 
     return JSON.parse(JSON.stringify(newUser));
   } catch (error: any) {

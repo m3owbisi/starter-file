@@ -21,7 +21,8 @@ export default function RootLayout({
     <html lang="en">
       <script src="https://app.unpkg.com/@rdkit/rdkit@2025.3.3-1.0.0/files/dist/RDKit_minimal.js"></script>
       <body suppressHydrationWarning={true}>
-        <SessionProvider>
+      <div className="font-poppins dark:bg-boxdark-2 dark:text-bodydark">
+              <SessionProvider>
           <UserProvider>
             <AblyProvider client={client}>
               <ChannelProvider channelName="chat-demo1">
@@ -31,6 +32,7 @@ export default function RootLayout({
           </UserProvider>
         </SessionProvider>        
         <SpeedInsights />
+      </div>
       </body>
     </html>
   );
