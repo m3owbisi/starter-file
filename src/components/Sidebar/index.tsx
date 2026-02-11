@@ -16,10 +16,6 @@ import {
   MessageSquareText,
   ChevronLeft,
   Dna,
-  Upload,
-  Target,
-  BarChart3,
-  FlaskConical,
 } from "lucide-react";
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -54,26 +50,6 @@ const menuGroups = [
         icon: <Dna size={25} />,
         label: "protein viewer",
         route: "/protein-viewer",
-      },
-      {
-        icon: <Upload size={25} />,
-        label: "dataset upload",
-        route: "/dataset-upload",
-      },
-      {
-        icon: <Target size={25} />,
-        label: "binding prediction",
-        route: "/binding-prediction",
-      },
-      {
-        icon: <BarChart3 size={25} />,
-        label: "analytics",
-        route: "/analytics",
-      },
-      {
-        icon: <FlaskConical size={25} />,
-        label: "experiments",
-        route: "/experiments",
       },
       {
         icon: <MessageSquareText size={25} />,
