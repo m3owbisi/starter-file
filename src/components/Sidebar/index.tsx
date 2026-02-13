@@ -16,6 +16,9 @@ import {
   MessageSquareText,
   ChevronLeft,
   Dna,
+  FlaskConical,
+  BarChart3,
+  GitFork,
 } from "lucide-react";
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -50,6 +53,21 @@ const menuGroups = [
         icon: <Dna size={25} />,
         label: "protein viewer",
         route: "/protein-viewer",
+      },
+      {
+        icon: <FlaskConical size={25} />,
+        label: "experiments",
+        route: "/experiments",
+      },
+      {
+        icon: <BarChart3 size={25} />,
+        label: "analytics",
+        route: "/analytics",
+      },
+      {
+        icon: <GitFork size={25} />,
+        label: "binding prediction",
+        route: "/binding-prediction",
       },
       {
         icon: <MessageSquareText size={25} />,
