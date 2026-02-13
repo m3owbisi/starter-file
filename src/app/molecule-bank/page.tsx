@@ -6,7 +6,7 @@ import DefaultLayout from "@/components/Layouts/DefaultLayout";
 const Page = () => {
   return (
     <DefaultLayout>
-      <ComponetHeader pageName="molecule bank" containActionButton={true} />
+      <ComponetHeader pageName="molecule bank" />
       <div className="flex flex-col gap-10">
         <MoleculeBankTable />
       </div>
