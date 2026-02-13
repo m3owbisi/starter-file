@@ -46,6 +46,9 @@ export const handler = NextAuth({
       return session;
     },
   },
+  pages: {
+    signIn: "/auth-page/signin",
+  },
   secret: process.env.NEXTAUTH_SECRET,
 });
 

@@ -5,7 +5,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "script-src 'self' blob: 'wasm-unsafe-eval' 'inline-speculation-rules';"
+          "value": "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: 'wasm-unsafe-eval' 'inline-speculation-rules' https://app.unpkg.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://*.vercel.app https://*.ably.io wss://*.ably.io https://*.mongodb.net;"
         }
       ]
     }

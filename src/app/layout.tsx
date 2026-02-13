@@ -8,6 +8,7 @@ import { SessionProvider } from "next-auth/react";
 import { UserProvider } from "./context/UserContext";
 import * as Ably from "ably";
 import { AblyProvider, ChannelProvider } from "ably/react";
+import Script from "next/script";
 
 export default function RootLayout({
   children,
@@ -19,7 +20,7 @@ export default function RootLayout({
   });
   return (
     <html lang="en">
-      <script src="https://app.unpkg.com/@rdkit/rdkit@2025.3.3-1.0.0/files/dist/RDKit_minimal.js"></script>
+      <Script src="https://app.unpkg.com/@rdkit/rdkit@2025.3.3-1.0.0/files/dist/RDKit_minimal.js" strategy="beforeInteractive" />
       <body suppressHydrationWarning={true}>
       <div className="font-poppins dark:bg-boxdark-2 dark:text-bodydark">
               <SessionProvider>
