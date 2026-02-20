@@ -7,6 +7,7 @@ import React, { useEffect, useState } from "react";
 import { SessionProvider } from "next-auth/react";
 import { UserProvider } from "./context/UserContext";
 import { SettingsProvider } from "./context/SettingsContext";
+import { DatasetProvider } from "./context/DatasetContext";
 import * as Ably from "ably";
 import { AblyProvider, ChannelProvider } from "ably/react";
 import Script from "next/script";
@@ -27,11 +28,13 @@ export default function RootLayout({
               <SessionProvider>
           <UserProvider>
             <SettingsProvider>
-              <AblyProvider client={client}>
-                <ChannelProvider channelName="proteinbind-chat">
-                  {children}
-                </ChannelProvider>
-              </AblyProvider>
+              <DatasetProvider>
+                <AblyProvider client={client}>
+                  <ChannelProvider channelName="proteinbind-chat">
+                    {children}
+                  </ChannelProvider>
+                </AblyProvider>
+              </DatasetProvider>
             </SettingsProvider>
           </UserProvider>
         </SessionProvider>        

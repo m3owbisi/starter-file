@@ -1,17 +1,26 @@
 "use client";
 
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo, useRef } from "react";
 import PdbUploader from "./PdbUploader";
 import ProteinViewerCanvas from "./ProteinViewerCanvas";
+import { ProteinViewerCanvasHandle } from "./ProteinViewerCanvas";
 import ControlsPanel from "./ControlsPanel";
 import BindingSitePanel from "./BindingSitePanel";
 import { parsePdb, extractProteinName } from "@/lib/proteinViewer/pdbParser";
+import { useDataset, generateDatasetId } from "@/app/context/DatasetContext";
+import type { Dataset } from "@/app/context/DatasetContext";
 
 const ProteinViewer: React.FC = () => {
+  // centralized dataset context
+  const { setActiveDataset, addDataset } = useDataset();
+
   // protein data state
   const [pdbData, setPdbData] = useState<string | null>(null);
   const [proteinName, setProteinName] = useState<string>("upload a protein");
   const [isLoading, setIsLoading] = useState(false);
+
+  // ref to the canvas imperative handle for zoom/reset
+  const canvasRef = useRef<ProteinViewerCanvasHandle>(null);
 
   // binding sites state
   const [bindingSites, setBindingSites] = useState<BindingSite[]>([]);
@@ -49,8 +58,33 @@ const ProteinViewer: React.FC = () => {
       setBindingSites([]); // clear previous binding sites
       setHighlightedSites([]);
       setIsLoading(false);
+
+      // register dataset in centralized context
+      try {
+        const structure = parsePdb(content);
+        const dataset: Dataset = {
+          id: generateDatasetId(),
+          name,
+          fileName,
+          fileType: fileName.split('.').pop()?.toLowerCase() || 'pdb',
+          pdbContent: content,
+          uploadDate: new Date(),
+          status: 'ready',
+          metadata: {
+            chains: structure.chains.length,
+            residues: structure.residues.length,
+            atoms: structure.atoms.length,
+            helices: structure.helices.length,
+            sheets: structure.sheets.length,
+          },
+        };
+        addDataset(dataset);
+        setActiveDataset(dataset);
+      } catch (err) {
+        console.error('failed to register dataset in context:', err);
+      }
     }, 500);
-  }, []);
+  }, [addDataset, setActiveDataset]);
 
   // handle residue hover
   const handleResidueHover = useCallback(
@@ -100,18 +134,17 @@ const ProteinViewer: React.FC = () => {
     console.log("edit site:", site);
   }, []);
 
-  // viewer control handlers
+  // viewer control handlers — delegate to canvas ref
   const handleResetView = useCallback(() => {
-    // this would call the viewer's reset method
-    console.log("reset view");
+    canvasRef.current?.resetView();
   }, []);
 
   const handleZoomIn = useCallback(() => {
-    console.log("zoom in");
+    canvasRef.current?.zoomIn();
   }, []);
 
   const handleZoomOut = useCallback(() => {
-    console.log("zoom out");
+    canvasRef.current?.zoomOut();
   }, []);
 
   // protein info
@@ -208,6 +241,7 @@ const ProteinViewer: React.FC = () => {
             {/* viewer container */}
             <div className="relative" style={{ height: "600px" }}>
               <ProteinViewerCanvas
+                ref={canvasRef}
                 pdbData={pdbData}
                 bindingSites={bindingSites}
                 highlightedSites={highlightedSites}

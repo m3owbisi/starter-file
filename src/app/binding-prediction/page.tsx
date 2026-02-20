@@ -9,35 +9,42 @@ const Page = () => {
     <DefaultLayout>
       <ComponentHeader pageName="binding prediction" containActionButton={false} />
       <div className="flex flex-col gap-6">
-        <div className="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+        <div className="rounded-2xl border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
           <div className="mb-6">
             <h2 className="text-xl font-semibold text-black dark:text-white">
               ai-powered protein binding prediction
             </h2>
             <p className="mt-2 text-sm text-body dark:text-bodydark">
-              predict binding affinities using amino acid sequences, 3d structures, and chemical properties. 
-              our ml model analyzes protein interactions to estimate binding strength and identify key binding sites.
+              predict binding affinities using your uploaded protein datasets. our ml models analyze
+              protein interactions to estimate binding strength and identify key binding sites.
+              no need to re-upload — your dataset from the protein viewer is automatically available.
             </p>
           </div>
           
           {/* feature highlights */}
-          <div className="mb-6 grid gap-4 md:grid-cols-3">
-            <div className="rounded-lg bg-primary/5 p-4">
-              <h3 className="text-sm font-semibold text-primary">sequence analysis</h3>
+          <div className="grid gap-4 md:grid-cols-4">
+            <div className="rounded-xl bg-primary/5 p-4">
+              <h3 className="text-sm font-semibold text-primary">dataset integration</h3>
               <p className="mt-1 text-xs text-body dark:text-bodydark">
-                analyze amino acid sequences to predict binding properties
+                automatically uses your active protein dataset — zero re-uploads
               </p>
             </div>
-            <div className="rounded-lg bg-green-500/5 p-4">
-              <h3 className="text-sm font-semibold text-green-600 dark:text-green-400">structure integration</h3>
+            <div className="rounded-xl bg-green-500/5 p-4">
+              <h3 className="text-sm font-semibold text-green-600 dark:text-green-400">model selection</h3>
               <p className="mt-1 text-xs text-body dark:text-bodydark">
-                enhance predictions with 3d pdb structure data
+                choose from multiple ml models for different prediction strategies
               </p>
             </div>
-            <div className="rounded-lg bg-purple-500/5 p-4">
-              <h3 className="text-sm font-semibold text-purple-600 dark:text-purple-400">confidence scores</h3>
+            <div className="rounded-xl bg-purple-500/5 p-4">
+              <h3 className="text-sm font-semibold text-purple-600 dark:text-purple-400">parameter tuning</h3>
               <p className="mt-1 text-xs text-body dark:text-bodydark">
-                get reliability metrics with every prediction
+                fine-tune temperature, confidence threshold, and iterations
+              </p>
+            </div>
+            <div className="rounded-xl bg-blue-500/5 p-4">
+              <h3 className="text-sm font-semibold text-blue-600 dark:text-blue-400">run history</h3>
+              <p className="mt-1 text-xs text-body dark:text-bodydark">
+                compare predictions across different parameter configurations
               </p>
             </div>
           </div>

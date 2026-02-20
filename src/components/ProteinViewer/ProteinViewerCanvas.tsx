@@ -1,11 +1,18 @@
 "use client";
 
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useRef, useState, useCallback, forwardRef, useImperativeHandle } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { parsePdb, PdbAtom } from "@/lib/proteinViewer/pdbParser";
 import { getAminoAcidFromThreeLetter, getAminoAcidTypeColor } from "@/lib/proteinViewer/aminoAcidData";
 import AminoAcidTooltip from "./AminoAcidTooltip";
+
+// public api exposed to parent via ref
+export interface ProteinViewerCanvasHandle {
+  zoomIn: () => void;
+  zoomOut: () => void;
+  resetView: () => void;
+}
 
 interface ProteinViewerCanvasProps {
   pdbData: string | null;
@@ -50,14 +57,14 @@ const getAtomRadius = (element: string): number => {
   return radii[element.toLowerCase()] || 0.77;
 };
 
-const ProteinViewerCanvas: React.FC<ProteinViewerCanvasProps> = ({
+const ProteinViewerCanvas = forwardRef<ProteinViewerCanvasHandle, ProteinViewerCanvasProps>(({
   pdbData,
   bindingSites,
   highlightedSites,
   aminoAcidFilter,
   onResidueHover,
   onResidueSelect,
-}) => {
+}, ref) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -295,6 +302,20 @@ const ProteinViewerCanvas: React.FC<ProteinViewerCanvasProps> = ({
     }
   }, [pdbData]);
 
+  // update atom visibility when amino acid filter changes
+  useEffect(() => {
+    if (!sceneRef.current) return;
+
+    atomMeshesRef.current.forEach(({ mesh, atom }) => {
+      const aminoAcid = getAminoAcidFromThreeLetter(atom.resName);
+      if (aminoAcid) {
+        // show/hide based on whether this amino acid's type is enabled
+        mesh.visible = aminoAcidFilter[aminoAcid.type] ?? true;
+      }
+      // atoms without a recognized amino acid type stay visible
+    });
+  }, [aminoAcidFilter]);
+
   // handle mouse move for hover effects
   const handleMouseMove = useCallback(
     (e: React.MouseEvent) => {
@@ -357,6 +378,48 @@ const ProteinViewerCanvas: React.FC<ProteinViewerCanvasProps> = ({
       }
     }
   }, []);
+
+  // programmatic zoom — moves camera along its look direction
+  const zoomIn = useCallback(() => {
+    if (!cameraRef.current || !controlsRef.current) return;
+    const camera = cameraRef.current;
+    const controls = controlsRef.current;
+
+    // compute direction from camera toward the orbit target
+    const direction = new THREE.Vector3()
+      .subVectors(controls.target, camera.position)
+      .normalize();
+
+    // move 10% closer to target (dolly in)
+    const distance = camera.position.distanceTo(controls.target);
+    const step = distance * 0.1;
+    camera.position.addScaledVector(direction, step);
+    controls.update();
+  }, []);
+
+  const zoomOut = useCallback(() => {
+    if (!cameraRef.current || !controlsRef.current) return;
+    const camera = cameraRef.current;
+    const controls = controlsRef.current;
+
+    // compute direction from camera toward the orbit target
+    const direction = new THREE.Vector3()
+      .subVectors(controls.target, camera.position)
+      .normalize();
+
+    // move 10% farther from target (dolly out)
+    const distance = camera.position.distanceTo(controls.target);
+    const step = distance * 0.1;
+    camera.position.addScaledVector(direction, -step);
+    controls.update();
+  }, []);
+
+  // expose methods to parent via ref
+  useImperativeHandle(ref, () => ({
+    zoomIn,
+    zoomOut,
+    resetView,
+  }), [zoomIn, zoomOut, resetView]);
 
   return (
     <div className="relative w-full h-full">
@@ -462,6 +525,8 @@ const ProteinViewerCanvas: React.FC<ProteinViewerCanvasProps> = ({
       />
     </div>
   );
-};
+});
+
+ProteinViewerCanvas.displayName = "ProteinViewerCanvas";
 
 export default ProteinViewerCanvas;
