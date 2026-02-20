@@ -1,20 +1,12 @@
 import { Schema, model, models } from "mongoose";
 
-const MessageSchema = new Schema({
-  sender: {
-    type: Schema.Types.ObjectId,
-    ref: "user",
-    required: true,
-  },
-  text: {
-    type: String,
-    required: true,
-  },
-  timestamp: {
-    type: Date,
-    default: Date.now,
-  },
-});
+/**
+ * group collection
+ *
+ * messages are NO LONGER embedded here — they live in the
+ * dedicated "message" collection and are linked via groupId.
+ * this keeps group documents small and queryable.
+ */
 
 const GroupSchema = new Schema({
   createdAt: {
@@ -37,7 +29,8 @@ const GroupSchema = new Schema({
       ref: "user",
     },
   ],
-  messages: [MessageSchema],
+  // legacy "messages" sub-array intentionally removed —
+  // use the Message collection instead
 });
 
 const group = models?.group || model("group", GroupSchema);

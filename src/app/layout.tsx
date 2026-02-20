@@ -6,6 +6,7 @@ import "@/css/style.css";
 import React, { useEffect, useState } from "react";
 import { SessionProvider } from "next-auth/react";
 import { UserProvider } from "./context/UserContext";
+import { SettingsProvider } from "./context/SettingsContext";
 import * as Ably from "ably";
 import { AblyProvider, ChannelProvider } from "ably/react";
 import Script from "next/script";
@@ -25,11 +26,13 @@ export default function RootLayout({
       <div className="font-poppins dark:bg-boxdark-2 dark:text-bodydark">
               <SessionProvider>
           <UserProvider>
-            <AblyProvider client={client}>
-              <ChannelProvider channelName="chat-demo1">
-                {children}
-              </ChannelProvider>
-            </AblyProvider>
+            <SettingsProvider>
+              <AblyProvider client={client}>
+                <ChannelProvider channelName="proteinbind-chat">
+                  {children}
+                </ChannelProvider>
+              </AblyProvider>
+            </SettingsProvider>
           </UserProvider>
         </SessionProvider>        
         <SpeedInsights />

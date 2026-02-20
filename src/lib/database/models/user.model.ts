@@ -38,6 +38,14 @@ const UserSchema = new Schema(
       type: String,
       default: "",
     },
+
+    // persisted theme preference
+    theme: {
+      type: String,
+      enum: ["dark", "light"],
+      default: "light",
+    },
+
     verificationToken: String,
     verificationExpires: Date,
     resetPasswordToken: String,

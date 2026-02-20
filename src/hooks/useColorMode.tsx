@@ -1,19 +1,21 @@
-import { useEffect } from "react";
-import useLocalStorage from "./useLocalStorage";
+"use client";
 
-const useColorMode = () => {
-  const [colorMode, setColorMode] = useLocalStorage("color-theme", "light");
+import { useSettings } from "@/app/context/SettingsContext";
 
-  useEffect(() => {
-    const className = "dark";
-    const bodyClass = window.document.body.classList;
+/**
+ * Drop-in replacement — now backed by SettingsContext
+ * so the theme persists to the database across sessions.
+ */
+const useColorMode = (): [string, (mode: string) => void] => {
+  const { theme, setTheme } = useSettings();
 
-    colorMode === "dark"
-      ? bodyClass.add(className)
-      : bodyClass.remove(className);
-  }, [colorMode]);
+  const setColorMode = (mode: string) => {
+    if (mode === "dark" || mode === "light") {
+      setTheme(mode);
+    }
+  };
 
-  return [colorMode, setColorMode];
+  return [theme, setColorMode];
 };
 
 export default useColorMode;

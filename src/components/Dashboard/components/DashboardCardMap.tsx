@@ -42,11 +42,15 @@ const MapOne: React.FC = () => {
     });
 
     return () => {
+      try {
+        mapOne.destroy();
+      } catch {
+        // destroy() may fail if React already removed the DOM node
+      }
       const map = document.getElementById("mapOne");
       if (map) {
         map.innerHTML = "";
       }
-      mapOne.destroy();
     };
   }, []);
 

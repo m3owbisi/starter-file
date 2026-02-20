@@ -300,3 +300,38 @@ input[type="search"]::-webkit-search-cancel-button {
 .aa-badge-negative { background-color: rgba(239, 68, 68, 0.2); color: #ef4444; }
 .aa-badge-special { background-color: rgba(139, 92, 246, 0.2); color: #8b5cf6; }
 
+/* ── smooth theme transitions (no jarring flash) ────────────────── */
+body,
+body * {
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    color 0.15s ease;
+}
+
+/* exclude elements where transition causes issues */
+input,
+textarea,
+canvas,
+video,
+.no-transition,
+.no-transition * {
+  transition: none !important;
+}
+
+/* ── toast animation ──────────────────────────────────────────────── */
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slideUpFade {
+  animation: slideUpFade 0.3s ease-out;
+}
+

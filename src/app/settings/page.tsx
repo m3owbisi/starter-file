@@ -68,8 +68,6 @@ const Settings = () => {
     }
   };
 
-  console.log(userData);
-
   const handleImageUploadSubmit = async (
     e: React.FormEvent<HTMLFormElement>,
   ) => {
