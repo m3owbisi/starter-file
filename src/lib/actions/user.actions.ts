@@ -5,8 +5,7 @@ import bcrypt from "bcrypt";
 import User from "../database/models/user.model";
 import { connectToDatabase } from "../database/mongoose";
 import { handleError } from "../utils";
-// TODO: create email.actions.ts with sendVerificationEmail & sendResetPasswordEmail
-// import { sendVerificationEmail, sendResetPasswordEmail } from "./email.actions";
+import { sendVerificationEmail, sendResetPasswordEmail } from "./email.actions";
 
 export async function createUser(user: CreateUserParams) {
   try {
@@ -28,8 +27,7 @@ export async function createUser(user: CreateUserParams) {
     });
 
     const verificationUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/verify-email?token=${newUser._id}`;
-    // TODO: send verification email once email.actions is implemented
-    console.log(`[email stub] verification email for ${newUser.email}: ${verificationUrl}`);
+    await sendVerificationEmail(newUser.firstName, newUser.email, verificationUrl);
 
     return JSON.parse(JSON.stringify(newUser));
   } catch (error: any) {
@@ -80,8 +78,7 @@ export async function requestPasswordReset(email: string) {
     const user = await User.findOne({ email });
     if (!user) throw new Error("user not found");
     const resetUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/reset-password?token=${user._id}`;
-    // TODO: send reset password email once email.actions is implemented
-    console.log(`[email stub] password reset email for ${user.email}: ${resetUrl}`);
+    await sendResetPasswordEmail(user.firstName, user.email, resetUrl);
 
     return true;
   } catch (error) {
