@@ -5,6 +5,7 @@ import { VerifyEmailTemplate } from "@/components/EmailTemplates/verify-email";
 import { ResetPasswordTemplate } from "@/components/EmailTemplates/reset-email";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+const fromEmail = process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev";
 
 export async function sendVerificationEmail(
   firstName: string,
@@ -13,7 +14,7 @@ export async function sendVerificationEmail(
 ) {
   try {
     const { data, error } = await resend.emails.send({
-      from: "protein bind <onboarding@resend.dev>",
+      from: `protein bind <${fromEmail}>`,
       to: [email],
       subject: "verify your email",
       react: VerifyEmailTemplate({ firstName, verificationUrl }),
@@ -41,7 +42,7 @@ export async function sendResetPasswordEmail(
 ) {
   try {
     const { data, error } = await resend.emails.send({
-      from: "protein bind <support@resend.dev>",
+      from: `protein bind <${fromEmail}>`,
       to: [email],
       subject: "reset your password",
       react: ResetPasswordTemplate({ firstName, resetUrl }),

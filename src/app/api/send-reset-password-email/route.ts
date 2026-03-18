@@ -1,13 +1,14 @@
 import { ResetPasswordTemplate } from "@/components/EmailTemplates/reset-email";
 import { Resend } from "resend";
 const resend = new Resend(process.env.RESEND_API_KEY);
+const fromEmail = process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev";
 
 export async function POST(request: Request) {
   const { firstName, email, resetUrl } = await request.json();
 
   try {
     const { data, error } = await resend.emails.send({
-      from: "protein bind <support@resend.dev>",
+      from: `protein bind <${fromEmail}>`,
       to: [email],
       subject: "reset your password",
       react: ResetPasswordTemplate({ firstName, resetUrl }),
